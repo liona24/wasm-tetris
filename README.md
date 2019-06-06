@@ -7,6 +7,10 @@
 
 # Tetris
 
+## Preview
+
+<p align="center"><img src="preview.png"></p>
+
 ## Usage
 
 In order to run this demo you will need Rust and `wasm-pack` along side npm (check the section below).
@@ -21,7 +25,6 @@ $ npm run start
 ```
 
 Controls are W A S D
-
 
 # The Template Used
 

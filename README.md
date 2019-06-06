@@ -20,6 +20,9 @@ $ npm install
 $ npm run start
 ```
 
+Controls are W A S D
+
+
 # The Template Used
 
 ## About

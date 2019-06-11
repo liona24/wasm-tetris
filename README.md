@@ -3,6 +3,7 @@
   <h1><code>wasm-tetris</code></h1>
 
   <strong>A simple tetris clone built using <a href="https://github.com/rustwasm/wasm-pack">wasm-pack</a>.</strong>
+  <p><strong>Demo available at <a href="https://liona24.github.io/wasm-tetris/">https://liona24.github.io/wasm-tetris/</a></strong></p>
 </div>
 
 # Tetris

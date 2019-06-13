@@ -1,37 +1,37 @@
 mod utils;
 extern crate js_sys;
 
-use wasm_bindgen::prelude::*;
-use utils::set_panic_hook;
 
+use utils::set_panic_hook;
+use wasm_bindgen::prelude::*;
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-type Grid = [ [ u8; 10 ]; 40 ];
+type Grid = [[u8; 10]; 40];
 
 #[wasm_bindgen]
 #[derive(Debug, Clone)]
 struct Point {
-    x : i32,
-    y : i32
+    x: i32,
+    y: i32,
 }
 
 #[wasm_bindgen]
 pub struct Game {
-    screen : [ u8; 10*40 ],
-    grid : Grid,
-    block : Block
+    screen: [u8; 10 * 40],
+    grid: Grid,
+    block: Block,
 }
 
 #[wasm_bindgen]
 #[derive(Debug, Clone)]
 struct Block {
-    position : Point,
-    cells : [ Point; 4 ],
-    color_code : u8
+    position: Point,
+    cells: [Point; 4],
+    color_code: u8,
 }
 
 #[derive(Debug)]
@@ -47,8 +47,10 @@ enum BlockType {
 
 impl Block {
     fn rotate_left(&self) -> Block {
-        let cx : f32 = ((self.cells[0].x + self.cells[1].x + self.cells[2].x + self.cells[3].x) as f32) / 4.0;
-        let cy : f32 = ((self.cells[0].y + self.cells[1].y + self.cells[2].y + self.cells[3].y) as f32) / 4.0;
+        let cx: f32 =
+            ((self.cells[0].x + self.cells[1].x + self.cells[2].x + self.cells[3].x) as f32) / 4.0;
+        let cy: f32 =
+            ((self.cells[0].y + self.cells[1].y + self.cells[2].y + self.cells[3].y) as f32) / 4.0;
 
         let cx = (cx + 0.5).round();
         let cy = (cy + 0.5).round();
@@ -66,8 +68,10 @@ impl Block {
     }
 
     fn rotate_right(&self) -> Block {
-        let cx : f32 = ((self.cells[0].x + self.cells[1].x + self.cells[2].x + self.cells[3].x) as f32) / 4.0;
-        let cy : f32 = ((self.cells[0].y + self.cells[1].y + self.cells[2].y + self.cells[3].y) as f32) / 4.0;
+        let cx: f32 =
+            ((self.cells[0].x + self.cells[1].x + self.cells[2].x + self.cells[3].x) as f32) / 4.0;
+        let cy: f32 =
+            ((self.cells[0].y + self.cells[1].y + self.cells[2].y + self.cells[3].y) as f32) / 4.0;
 
         let mut rv = self.clone();
 
@@ -81,92 +85,85 @@ impl Block {
         rv
     }
 
-    fn shift(&mut self, offset : Point) {
+    fn shift(&mut self, offset: Point) {
         self.position.x += offset.x;
         self.position.y += offset.y;
     }
 
-    fn new(typ : &BlockType) -> Block {
-        let position = Point { x : 4, y : 0 };
+    fn new(typ: &BlockType) -> Block {
+        let position = Point { x: 4, y: 0 };
 
         match typ {
-            BlockType::I =>
-                Block {
-                    position,
-                    cells : [
-                        Point { x : 0, y : 0 },
-                        Point { x : 0, y : 1 },
-                        Point { x : 0, y : 2 },
-                        Point { x : 0, y : 3 },
-                    ],
-                    color_code : 1u8
-                },
-            BlockType::O =>
-                Block {
-                    position,
-                    cells : [
-                        Point { x : 0, y : 0 },
-                        Point { x : 0, y : 1 },
-                        Point { x : 1, y : 1 },
-                        Point { x : 1, y : 0 },
-                    ],
-                    color_code : 2u8
-                },
-            BlockType::T =>
-                Block {
-                    position,
-                    cells : [
-                        Point { x : 0, y : 0 },
-                        Point { x : 1, y : 0 },
-                        Point { x : 2, y : 0 },
-                        Point { x : 1, y : 1 },
-                    ],
-                    color_code : 3u8
-                },
-            BlockType::S =>
-                Block {
-                    position,
-                    cells : [
-                        Point { x : 2, y : 0 },
-                        Point { x : 1, y : 0 },
-                        Point { x : 1, y : 1 },
-                        Point { x : 0, y : 1 },
-                    ],
-                    color_code : 4u8
-                },
-            BlockType::Z =>
-                Block {
-                    position,
-                    cells : [
-                        Point { x : 2, y : 1 },
-                        Point { x : 1, y : 1 },
-                        Point { x : 1, y : 0 },
-                        Point { x : 0, y : 0 },
-                    ],
-                    color_code : 5u8
-                },
-            BlockType::J =>
-                Block {
-                    position,
-                    cells : [
-                        Point { x : 1, y : 0 },
-                        Point { x : 1, y : 1 },
-                        Point { x : 1, y : 2 },
-                        Point { x : 0, y : 2 },
-                    ],
-                    color_code : 6u8
-                },
-            BlockType::L =>
-                Block {
-                    position,
-                    cells : [
-                        Point { x : 0, y : 0 },
-                        Point { x : 0, y : 1 },
-                        Point { x : 0, y : 2 },
-                        Point { x : 1, y : 2 },
-                    ],
-                    color_code : 7u8
-                }
+            BlockType::I => Block {
+                position,
+                cells: [
+                    Point { x: 0, y: 0 },
+                    Point { x: 0, y: 1 },
+                    Point { x: 0, y: 2 },
+                    Point { x: 0, y: 3 },
+                ],
+                color_code: 1u8,
+            },
+            BlockType::O => Block {
+                position,
+                cells: [
+                    Point { x: 0, y: 0 },
+                    Point { x: 0, y: 1 },
+                    Point { x: 1, y: 1 },
+                    Point { x: 1, y: 0 },
+                ],
+                color_code: 2u8,
+            },
+            BlockType::T => Block {
+                position,
+                cells: [
+                    Point { x: 0, y: 0 },
+                    Point { x: 1, y: 0 },
+                    Point { x: 2, y: 0 },
+                    Point { x: 1, y: 1 },
+                ],
+                color_code: 3u8,
+            },
+            BlockType::S => Block {
+                position,
+                cells: [
+                    Point { x: 2, y: 0 },
+                    Point { x: 1, y: 0 },
+                    Point { x: 1, y: 1 },
+                    Point { x: 0, y: 1 },
+                ],
+                color_code: 4u8,
+            },
+            BlockType::Z => Block {
+                position,
+                cells: [
+                    Point { x: 2, y: 1 },
+                    Point { x: 1, y: 1 },
+                    Point { x: 1, y: 0 },
+                    Point { x: 0, y: 0 },
+                ],
+                color_code: 5u8,
+            },
+            BlockType::J => Block {
+                position,
+                cells: [
+                    Point { x: 1, y: 0 },
+                    Point { x: 1, y: 1 },
+                    Point { x: 1, y: 2 },
+                    Point { x: 0, y: 2 },
+                ],
+                color_code: 6u8,
+            },
+            BlockType::L => Block {
+                position,
+                cells: [
+                    Point { x: 0, y: 0 },
+                    Point { x: 0, y: 1 },
+                    Point { x: 0, y: 2 },
+                    Point { x: 1, y: 2 },
+                ],
+                color_code: 7u8,
+            },
         }
     }
 
@@ -179,18 +176,18 @@ impl Block {
             BlockType::S,
             BlockType::Z,
             BlockType::J,
-            BlockType::L
+            BlockType::L,
         ][idx];
         Block::new(&typ)
     }
 }
 
-fn rand_int(max : usize) -> usize {
+fn rand_int(max: usize) -> usize {
     (js_sys::Math::random() * (max as f64)) as usize
 }
 
-fn step_down(grid : &mut Grid, block : &mut Block) -> bool {
-    let off = Point { x : 0, y : 1 };
+fn step_down(grid: &mut Grid, block: &mut Block) -> bool {
+    let off = Point { x: 0, y: 1 };
     if !move_block(grid, block, off) {
 
         for p in block.cells.iter() {
@@ -205,19 +202,19 @@ fn step_down(grid : &mut Grid, block : &mut Block) -> bool {
     }
 }
 
-fn step_left(grid : &Grid, block : &mut Block) -> bool {
-    let off = Point { x : -1, y : 0 };
+fn step_left(grid: &Grid, block: &mut Block) -> bool {
+    let off = Point { x: -1, y: 0 };
     move_block(grid, block, off)
 }
 
-fn step_right(grid : &Grid, block : &mut Block) -> bool {
-    let off = Point { x : 1, y : 0 };
+fn step_right(grid: &Grid, block: &mut Block) -> bool {
+    let off = Point { x: 1, y: 0 };
     move_block(grid, block, off)
 }
 
-fn rotate_left(grid : &Grid, block : &Block) -> Option<Block> {
+fn rotate_left(grid: &Grid, block: &Block) -> Option<Block> {
     let tmp = block.rotate_left();
-    let off = Point { x : 0, y : 0 };
+    let off = Point { x: 0, y: 0 };
     if does_collide(grid, &tmp, &off) {
         None
     } else {
@@ -225,7 +222,7 @@ fn rotate_left(grid : &Grid, block : &Block) -> Option<Block> {
     }
 }
 
-fn move_block(grid : &Grid, block : &mut Block, offset : Point) -> bool {
+fn move_block(grid: &Grid, block: &mut Block, offset: Point) -> bool {
     if does_collide(grid, block, &offset) {
         false
     } else {
@@ -234,39 +231,48 @@ fn move_block(grid : &Grid, block : &mut Block, offset : Point) -> bool {
     }
 }
 
-fn drop_down(grid : &mut Grid, block : &mut Block) {
+fn drop_down(grid: &mut Grid, block: &mut Block) {
     while step_down(grid, block) {}
 }
 
-fn does_collide(grid : &Grid, block : &Block, offset : &Point) -> bool {
+fn does_collide(grid: &Grid, block: &Block, offset: &Point) -> bool {
     let cells = [
-        (block.position.x + offset.x + block.cells[0].x, block.position.y + offset.y + block.cells[0].y),
-        (block.position.x + offset.x + block.cells[1].x, block.position.y + offset.y + block.cells[1].y),
-        (block.position.x + offset.x + block.cells[2].x, block.position.y + offset.y + block.cells[2].y),
-        (block.position.x + offset.x + block.cells[3].x, block.position.y + offset.y + block.cells[3].y),
+        (
+            block.position.x + offset.x + block.cells[0].x,
+            block.position.y + offset.y + block.cells[0].y,
+        ),
+        (
+            block.position.x + offset.x + block.cells[1].x,
+            block.position.y + offset.y + block.cells[1].y,
+        ),
+        (
+            block.position.x + offset.x + block.cells[2].x,
+            block.position.y + offset.y + block.cells[2].y,
+        ),
+        (
+            block.position.x + offset.x + block.cells[3].x,
+            block.position.y + offset.y + block.cells[3].y,
+        ),
     ];
 
     for c in cells.iter() {
-        if  c.1 < 0 || c.1 >= 40 ||
-            c.0 < 0 || c.0 >= 10 ||
-            grid[c.1 as usize][c.0 as usize] != 0u8 {
-            return true
+        if c.1 < 0 || c.1 >= 40 || c.0 < 0 || c.0 >= 10 || grid[c.1 as usize][c.0 as usize] != 0u8 {
+            return true;
         }
     }
     false
 }
 
-fn game_finished(grid : &Grid) -> bool {
+fn game_finished(grid: &Grid) -> bool {
     for i in 0..10 {
         if grid[0][i] != 0u8 {
-            return true
+            return true;
         }
     }
     false
 }
 
-fn clear_full_lines(grid : &mut Grid) -> u32 {
-
+fn clear_full_lines(grid: &mut Grid) -> u32 {
     let mut score = 0;
 
     for y in 0..40 {
@@ -274,7 +280,7 @@ fn clear_full_lines(grid : &mut Grid) -> u32 {
             score += 1;
             for y2 in (1..=y).rev() {
                 for x in 0..10 {
-                    grid[y2][x] = grid[y2-1][x];
+                    grid[y2][x] = grid[y2 - 1][x];
                 }
             }
         }
@@ -290,9 +296,9 @@ impl Game {
     pub fn new() -> Game {
         set_panic_hook();
         Game {
-            screen : [ 0; 400 ],
-            grid : [ [ 0; 10 ]; 40 ],
-            block : Block::random()
+            screen: [0; 400],
+            grid: [[0; 10]; 40],
+            block: Block::random(),
         }
     }
 
@@ -314,28 +320,28 @@ impl Game {
         self.screen.as_ptr()
     }
 
-    pub fn input(&mut self, input_code : u8) {
-
-        // the layout is as follows:
-        // bit 0 - void
-        // bit 1 - up-key pressed
-        // bit 2 - down-key pressed
-        // bit 3 - left-key pressed
-        // bit 4 - right-key pressed
-
-        if (input_code & 2) != 0 {
-            if let Some(new_block) = rotate_left(&self.grid, &self.block) {
-                self.block = new_block;
+    /// bit 0 - void
+    /// bit 1 - up-key pressed
+    /// bit 2 - down-key pressed
+    /// bit 3 - left-key pressed
+    /// bit 4 - right-key pressed
+    pub fn input(&mut self, input_code: u8) {
+        match input_code {
+            2 => {
+                if let Some(new_block) = rotate_left(&self.grid, &self.block) {
+                    self.block = new_block;
+                }
             }
-        }
-        if (input_code & 4) != 0 {
-            drop_down(&mut self.grid, &mut self.block);
-        }
-        if (input_code & 8) != 0 {
-            step_left(&self.grid, &mut self.block);
-        }
-        if (input_code & 16) != 0 {
-            step_right(&self.grid, &mut self.block);
+            4 => {
+                step_down(&mut self.grid, &mut self.block);
+            }
+            8 => {
+                step_left(&self.grid, &mut self.block);
+            }
+            16 => {
+                step_right(&self.grid, &mut self.block);
+            }
+            _ => {}
         }
     }
 
